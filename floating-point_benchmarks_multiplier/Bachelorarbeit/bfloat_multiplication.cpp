@@ -172,8 +172,7 @@ int bv(string sizebit, int sign, int exponent,int mantissa) {
     smt2File << "(declare-fun s_outshift () (_ BitVec 1))" << endl;
     smt2File << "(declare-fun s  () (_ BitVec "<< mantissaWidth - 1 <<"))" << endl;
 
-    smt2File << "(declare-fun guard_bit () (_ BitVec 1))" << endl;
-    smt2File << "(declare-fun guard_bit_2 () (_ BitVec 1))" << endl;
+    smt2File << "(declare-fun lsb () (_ BitVec 1))" << endl;
 /*
     string binary_x;
     string binary_y;
@@ -333,9 +332,7 @@ int bv(string sizebit, int sign, int exponent,int mantissa) {
 
     smt2File << "(assert (= s (concat s_help s_last)))" << endl;
     // Zum Runden ist das Guard_bit wichtig, da es dazu dient dass es gerundet wird.
-    smt2File << "(assert (= guard_bit (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
-
-    smt2File << "(assert (= guard_bit_2 (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 2<<" "<<mantissaWidth + 2<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth +1 <<" "<<mantissaWidth +1 <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth+1 <<" "<< mantissaWidth+1<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
+    smt2File << "(assert (= lsb (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
 
     //0101
     //1100
@@ -346,7 +343,7 @@ int bv(string sizebit, int sign, int exponent,int mantissa) {
     //1101
 
     //nur Aufrundfälle aufzählen, da beim abrunden, die z_mantisse nicht geändert wird sondern nur gecuttet
-    smt2File << "(assert (= z_mantissa_GRS(ite (or (and (= g #b1) (or (= r #b1) (distinct s compare_s)(= add_outshift_number_"<<mant_length + 9 <<" eins))) (and (= g #b1) (= guard_bit #b1))) (bvadd z_mantissa add_mant) z_mantissa)))" << endl;
+    smt2File << "(assert (= z_mantissa_GRS(ite (or (and (= g #b1) (or (= r #b1) (distinct s compare_s)(= add_outshift_number_"<<mant_length + 9 <<" eins))) (and (= g #b1) (= lsb #b1))) (bvadd z_mantissa add_mant) z_mantissa)))" << endl;
 
     smt2File << "(assert (= z_exponent_over (ite (and (= z_mantissa comp_mant_1) (= z_mantissa_GRS comp_mant_0)) (bvadd z_exponent_underflow add_expo)  z_exponent_underflow)))" << endl;
 
@@ -543,8 +540,8 @@ int bv_bv(string sizebit, int sign, int exponent,int mantissa) {
     smt2File << "(declare-fun s_outshift () (_ BitVec 1))" << endl;
     smt2File << "(declare-fun s  () (_ BitVec "<< mantissaWidth - 1 <<"))" << endl;
 
-    smt2File << "(declare-fun guard_bit () (_ BitVec 1))" << endl;
-    smt2File << "(declare-fun guard_bit_2 () (_ BitVec 1))" << endl;
+    smt2File << "(declare-fun lsb () (_ BitVec 1))" << endl;
+    
 /*
     string binary_x;
     string binary_y;
@@ -706,9 +703,7 @@ int bv_bv(string sizebit, int sign, int exponent,int mantissa) {
 
     smt2File << "(assert (= s (concat s_help s_last)))" << endl;
     // Zum Runden ist das Guard_bit wichtig, da es dazu dient dass es gerundet wird.
-    smt2File << "(assert (= guard_bit (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
-
-    smt2File << "(assert (= guard_bit_2 (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 2<<" "<<mantissaWidth + 2<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth +1 <<" "<<mantissaWidth +1 <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth+1 <<" "<< mantissaWidth+1<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
+    smt2File << "(assert (= lsb (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
 
     //0101
     //1100
@@ -719,7 +714,7 @@ int bv_bv(string sizebit, int sign, int exponent,int mantissa) {
     //1101
 
     //nur Aufrundfälle aufzählen, da beim abrunden, die z_mantisse nicht geändert wird sondern nur gecuttet
-    smt2File << "(assert (= z_mantissa_GRS(ite (or (and (= g #b1) (or (= r #b1) (distinct s compare_s)(= add_outshift_number_"<<mant_length + 9 <<" eins))) (and (= g #b1) (= guard_bit #b1))) (bvadd z_mantissa add_mant) z_mantissa)))" << endl;
+    smt2File << "(assert (= z_mantissa_GRS(ite (or (and (= g #b1) (or (= r #b1) (distinct s compare_s)(= add_outshift_number_"<<mant_length + 9 <<" eins))) (and (= g #b1) (= lsb #b1))) (bvadd z_mantissa add_mant) z_mantissa)))" << endl;
 
     smt2File << "(assert (= z_exponent_over (ite (and (= z_mantissa comp_mant_1) (= z_mantissa_GRS comp_mant_0)) (bvadd z_exponent_underflow add_expo)  z_exponent_underflow)))" << endl;
 
@@ -786,8 +781,7 @@ int bv_bv(string sizebit, int sign, int exponent,int mantissa) {
     smt2File << "(declare-fun s_outshift_ () (_ BitVec 1))" << endl;
     smt2File << "(declare-fun s_  () (_ BitVec "<< mantissaWidth - 1 <<"))" << endl;
 
-    smt2File << "(declare-fun guard_bit_c () (_ BitVec 1))" << endl;
-    smt2File << "(declare-fun guard_bit_c_2 () (_ BitVec 1))" << endl;
+    smt2File << "(declare-fun lsb_ () (_ BitVec 1))" << endl;
 
     // exract sign, expo and mant
     // Vorzeichen extrahieren
@@ -928,9 +922,7 @@ int bv_bv(string sizebit, int sign, int exponent,int mantissa) {
 
     smt2File << "(assert (= s_ (concat s_help_ s_last_)))" << endl;
     // Zum Runden ist das guard_bit_c wichtig, da es dazu dient dass es gerundet wird.
-    smt2File << "(assert (= guard_bit_c (ite (and (or (and (= extra_bit_c_2 #b1)(= extra_bit_c #b1))(and (= extra_bit_c_2 #b1)(= extra_bit_c #b0)))(distinct c_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") c_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_c_2 #b1)(= extra_bit_c #b1))(= extra_bit_c #b0))(= c_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") c_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") c_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
-
-    smt2File << "(assert (= guard_bit_c_2 (ite (and (or (and (= extra_bit_c_2 #b1)(= extra_bit_c #b1))(and (= extra_bit_c_2 #b1)(= extra_bit_c #b0)))(distinct c_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 2<<" "<<mantissaWidth + 2<<") c_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_c_2 #b1)(= extra_bit_c #b1))(= extra_bit_c #b0))(= c_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth +1 <<" "<<mantissaWidth +1 <<") c_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth+1 <<" "<< mantissaWidth+1<<") c_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
+    smt2File << "(assert (= lsb_ (ite (and (or (and (= extra_bit_c_2 #b1)(= extra_bit_c #b1))(and (= extra_bit_c_2 #b1)(= extra_bit_c #b0)))(distinct c_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") c_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_c_2 #b1)(= extra_bit_c #b1))(= extra_bit_c #b0))(= c_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") c_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") c_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
 
     //0101
     //1100
@@ -941,7 +933,7 @@ int bv_bv(string sizebit, int sign, int exponent,int mantissa) {
     //1101
 
     //nur Aufrundfälle aufzählen, da beim abrunden, die z_mantisse nicht geändert wird sondern nur gecuttet
-    smt2File << "(assert (= c_mantissa_GRS(ite (or (and (= g_ #b1) (or (= r_#b1) (distinct s_ compare_s)(= add_outshift_number_c_"<<mant_length + 9 <<" eins))) (and (= g_ #b1) (= guard_bit_c #b1))) (bvadd c_mantissa add_mant) c_mantissa)))" << endl;
+    smt2File << "(assert (= c_mantissa_GRS(ite (or (and (= g_ #b1) (or (= r_#b1) (distinct s_ compare_s)(= add_outshift_number_c_"<<mant_length + 9 <<" eins))) (and (= g_ #b1) (= lsb_ #b1))) (bvadd c_mantissa add_mant) c_mantissa)))" << endl;
 
     smt2File << "(assert (= c_exponent_over_ (ite (and (= c_mantissa comp_mant_1) (= c_mantissa_GRS comp_mant_0)) (bvadd c_exponent_underflow add_expo)  c_exponent_underflow)))" << endl;
 
@@ -1232,8 +1224,8 @@ int bv_fp(string sizebit, int sign, int exponent,int mantissa) {
     smt2File << "(declare-fun s_outshift () (_ BitVec 1))" << endl;
     smt2File << "(declare-fun s  () (_ BitVec "<< mantissaWidth - 1 <<"))" << endl;
 
-    smt2File << "(declare-fun guard_bit () (_ BitVec 1))" << endl;
-    smt2File << "(declare-fun guard_bit_2 () (_ BitVec 1))" << endl;
+    smt2File << "(declare-fun lsb () (_ BitVec 1))" << endl;
+    
 /*
     string binary_x;
     string binary_y;
@@ -1396,9 +1388,7 @@ int bv_fp(string sizebit, int sign, int exponent,int mantissa) {
 
     smt2File << "(assert (= s (concat s_help s_last)))" << endl;
     // Zum Runden ist das Guard_bit wichtig, da es dazu dient dass es gerundet wird.
-    smt2File << "(assert (= guard_bit (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
-
-    smt2File << "(assert (= guard_bit_2 (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 2<<" "<<mantissaWidth + 2<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth +1 <<" "<<mantissaWidth +1 <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth+1 <<" "<< mantissaWidth+1<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
+    smt2File << "(assert (= lsb (ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(and (= extra_bit_2 #b1)(= extra_bit #b0)))(distinct z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth + 1<<" "<<mantissaWidth + 1<<") z_mantissa_underflow_"<<mant_length  + 9<<")(ite (and (or (and (= extra_bit_2 #b1)(= extra_bit #b1))(= extra_bit #b0))(= z_exponent_underflow comp_expo)) ((_ extract "<<mantissaWidth  <<" "<<mantissaWidth  <<") z_mantissa_underflow_"<<mant_length  + 9<<") ((_ extract "<<mantissaWidth <<" "<< mantissaWidth<<") z_mantissa_underflow_"<<mant_length  + 9<<")))))" << endl;
 
     //0101
     //1100
@@ -1410,7 +1400,7 @@ int bv_fp(string sizebit, int sign, int exponent,int mantissa) {
     //
     //
     //nur Aufrundfälle aufzählen, da beim abrunden, die z_mantisse nicht geändert wird sondern nur gecuttet
-    smt2File << "(assert (= z_mantissa_GRS(ite (or (and (= g #b1) (or (= r #b1) (distinct s compare_s)(= add_outshift_number_"<<mant_length + 9 <<" eins))) (and (= g #b1) (= guard_bit #b1))) (bvadd z_mantissa add_mant) z_mantissa)))" << endl;
+    smt2File << "(assert (= z_mantissa_GRS(ite (or (and (= g #b1) (or (= r #b1) (distinct s compare_s)(= add_outshift_number_"<<mant_length + 9 <<" eins))) (and (= g #b1) (= lsb #b1))) (bvadd z_mantissa add_mant) z_mantissa)))" << endl;
 
     smt2File << "(assert (= z_exponent_over (ite (and (= z_mantissa comp_mant_1) (= z_mantissa_GRS comp_mant_0)) (bvadd z_exponent_underflow add_expo)  z_exponent_underflow)))" << endl;
 
